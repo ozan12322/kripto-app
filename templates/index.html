@@ -1,0 +1,231 @@
+{% extends 'base.html' %} {% block content %}
+<div class="row">
+  <div class="col-md-5 mb-4">
+    <div class="card shadow-sm">
+      <div class="card-header bg-primary text-white fw-bold">
+        ⚙️ Parameter Simulasi
+      </div>
+      <div class="card-body">
+        <form method="POST">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Pilih Algoritma</label>
+            <select
+              class="form-select"
+              name="cipher_type"
+              id="cipherSelect"
+              required
+              onchange="toggleFields()"
+            >
+              <option value="caesar">Caesar Cipher</option>
+              <option value="vigenere">Vigenère Cipher</option>
+              <option value="affine">Affine Cipher</option>
+              <option value="hill">Hill Cipher</option>
+              <option value="playfair">Playfair Cipher</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Mode Operasi</label>
+            <div class="form-check form-check-inline m-2">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="mode"
+                value="encrypt"
+                checked
+              />
+              Enkripsi
+            </div>
+            <div class="form-check form-check-inline">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="mode"
+                value="decrypt"
+              />
+              Dekripsi
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold"
+              >Teks (Plaintext / Ciphertext)</label
+            >
+            <textarea
+              class="form-control"
+              name="text"
+              rows="3"
+              required
+              placeholder="Masukkan pesan di sini..."
+            ></textarea>
+          </div>
+
+          <div id="caesar_field" class="cipher-fields mb-3">
+            <label class="form-label">Shift Key (1-25)</label>
+            <input
+              type="number"
+              class="form-control"
+              name="caesar_key"
+              min="1"
+              max="25"
+              value="3"
+            />
+          </div>
+
+          <div id="vigenere_field" class="cipher-fields mb-3 d-none">
+            <label class="form-label">Kata Kunci (Alphabet)</label>
+            <input
+              type="text"
+              class="form-control"
+              name="vigenere_key"
+              value="KEYWORD"
+            />
+          </div>
+
+          <div id="affine_field" class="cipher-fields mb-3 d-none">
+            <label class="form-label">Nilai a (Koprima dengan 26)</label>
+            <input
+              type="number"
+              class="form-control mb-2"
+              name="affine_a"
+              value="5"
+            />
+            <label class="form-label">Nilai b</label>
+            <input
+              type="number"
+              class="form-control"
+              name="affine_b"
+              value="8"
+            />
+          </div>
+
+          <div id="hill_field" class="cipher-fields mb-3 d-none">
+            <label class="form-label">Ukuran Matriks</label>
+            <select class="form-select mb-2" name="hill_size">
+              <option value="2">2x2</option>
+              <option value="3">3x3</option>
+            </select>
+            <label class="form-label"
+              >Elemen Matriks (Pisahkan dengan spasi, ex: 4 3 2 1)</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              name="hill_matrix"
+              value="4 3 2 1"
+            />
+          </div>
+
+          <div id="playfair_field" class="cipher-fields mb-3 d-none">
+            <label class="form-label">Kata Kunci (Matrix Generator)</label>
+            <input
+              type="text"
+              class="form-control"
+              name="playfair_key"
+              value="PLAYFAIR"
+            />
+          </div>
+
+          <button type="submit" class="btn btn-success w-100 fw-bold mt-2">
+            Jalankan Simulasi 🚀
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-7">
+    {% if output %}
+    <div class="card shadow-sm mb-4 fade-in">
+      <div class="card-header bg-success text-white fw-bold">
+        🎯 Hasil Akhir
+      </div>
+      <div class="card-body bg-light-subtle">
+        <h4 class="text-center text-primary font-monospace fw-bold">
+          {{ output }}
+        </h4>
+      </div>
+    </div>
+
+    <div class="card shadow-sm fade-in">
+      <div class="card-header bg-info text-dark fw-bold">
+        📋 Proses Langkah demi Langkah (Transparan & Edukatif)
+      </div>
+      <div class="card-body">
+        <ol class="list-group list-group-numbered">
+          {% for step in steps %}
+          <li
+            class="list-group-item list-group-item-action d-flex justify-content-between align-items-start"
+          >
+            <div class="ms-2 me-auto">
+              <div>{{ step | safe }}</div>
+            </div>
+          </li>
+          {% endfor %}
+        </ol>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="card shadow-sm mt-4">
+      <div
+        class="card-header bg-secondary text-white d-flex justify-content-between align-items-center"
+      >
+        <span class="fw-bold">📜 Riwayat Aktivitas Sesi Ini</span>
+        <a href="/clear-history" class="btn btn-danger btn-sm text-white"
+          >Hapus</a
+        >
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-striped mb-0 text-center">
+          <thead>
+            <tr>
+              <th>Algoritma</th>
+              <th>Mode</th>
+              <th>Input</th>
+              <th>Output</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for hist in history %}
+            <tr>
+              <td><span class="badge bg-primary">{{ hist.cipher }}</span></td>
+              <td>
+                <span
+                  class="badge bg-{{ 'success' if hist.mode=='ENKRIPSI' else 'warning' }}"
+                  >{{ hist.mode }}</span
+                >
+              </td>
+              <td class="text-truncate" style="max-width: 120px">
+                {{ hist.input }}
+              </td>
+              <td class="font-monospace fw-bold text-success">
+                {{ hist.output }}
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="4" class="text-muted text-center p-3">
+                Belum ada riwayat aktivitas.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleFields() {
+    let select = document.getElementById("cipherSelect").value;
+    // Sembunyikan semua parameter spesifik dahulu
+    document
+      .querySelectorAll(".cipher-fields")
+      .forEach((div) => div.classList.add("d-none"));
+    // Tampilkan parameter spesifik yang dipilih
+    document.getElementById(select + "_field").classList.remove("d-none");
+  }
+</script>
+{% endblock %}
