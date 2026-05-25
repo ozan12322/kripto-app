@@ -1,4 +1,4 @@
-# 🔐 Web Simulasi Kriptografi Klasik (EduKripto)
+# 🔐 Web Simulasi Kriptografi Klasik
 
 Aplikasi web edukatif interaktif berbasis **Flask (Python)** untuk mensimulasikan proses enkripsi dan dekripsi algoritma Kriptografi Klasik secara rinci, transparan, dan langkah-demi-langkah.
 
