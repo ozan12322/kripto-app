@@ -11,7 +11,7 @@ Aplikasi web edukatif interaktif berbasis **Flask (Python)** untuk mensimulasika
 
 ## 💻 Cara Menjalankan Secara Lokal
 
-1. Clone repositori: `git clone https://github.com/username/kripto-app.git`
+1. Clone repositori: `git clone https://github.com/ozan12322/kripto-app`
 2. Install dependensi: `pip install flask numpy`
 3. Jalankan aplikasi: `python app.py`
 4. Buka browser pada alamat: `http://127.0.0.1:5000`
